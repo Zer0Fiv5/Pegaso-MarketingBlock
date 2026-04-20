@@ -1,1 +1,158 @@
-# Pegaso-MarketingBlock
+# Pegaso Marketing Block
+
+Userscript for UniPegaso and Multiversity pages that hides selected marketing interface elements, closes known popups, removes the cookie banner, and hides the **"Per Te"** section.
+
+## What it does
+
+This userscript helps clean up the page UI by automatically removing or hiding some non-essential interface elements.
+
+Main features:
+
+- Closes known marketing popups
+- Hides the cookie banner
+- Hides the **Per Te** section when it contains the related slider
+- Re-runs cleanup automatically when the page updates dynamically
+- Works on both `*.unipegaso.it` and `*.multiversity.click`
+
+## Supported pages
+
+The script runs on:
+
+```text
+https://*.unipegaso.it/*
+https://*.multiversity.click/*
+````
+
+## Installation
+
+To use this script, you need a userscript manager in your browser.
+
+Supported managers include:
+
+* Tampermonkey
+* Violentmonkey
+* Greasemonkey
+
+### Steps
+
+1. Install a userscript manager extension in your browser.
+
+2. Download or open the file:
+
+   ```text
+   pegaso-marketing-block.user.js
+   ```
+
+3. Import it into your userscript manager.
+
+4. Visit a supported UniPegaso or Multiversity page.
+
+5. The script runs automatically.
+
+## Features
+
+### Marketing popup closing
+
+The script detects known popup close buttons and clicks them automatically when visible.
+
+### Cookie banner hiding
+
+The script looks for the known cookie policy link and hides the related banner container.
+
+### "Per Te" section hiding
+
+The script searches for headings named **Per Te** and hides the related content block when it detects the expected slider structure.
+
+### Dynamic page cleanup
+
+Because the target sites may update content dynamically, the script uses a `MutationObserver` and re-applies cleanup after DOM changes.
+
+## How it works
+
+The script performs these actions:
+
+1. Injects a small CSS helper class used to hide elements
+2. Searches for visible marketing popup close buttons
+3. Hides the cookie banner when detected
+4. Searches for the **Per Te** heading
+5. Hides the nearest matching section containing the slider
+6. Observes the page for changes and repeats the cleanup when needed
+
+## Usage
+
+This script does not require manual commands.
+
+Once installed, it runs automatically on matching pages.
+
+## Notes
+
+This script is intentionally focused on UI cleanup only.
+
+It does not modify lesson progress, account data, or platform logic beyond closing or hiding selected visual elements.
+
+## Limitations
+
+This script depends on the current site structure and CSS classes.
+
+It may stop working if the platform changes:
+
+* DOM structure
+* class names
+* popup structure
+* cookie banner structure
+* slider layout for the **Per Te** section
+
+If that happens, the selectors may need to be updated.
+
+## Troubleshooting
+
+### The script does not seem to work
+
+Check that:
+
+* the userscript is enabled
+* you are on a supported domain
+* the page has fully loaded
+* your userscript manager did not block the script
+
+### The popup is still visible
+
+Possible reasons:
+
+* the popup structure changed
+* the close button selector changed
+* the popup is loaded later than expected
+
+Reloading the page may help confirm whether the observer is catching the updated DOM correctly.
+
+### The "Per Te" section is still visible
+
+Possible reasons:
+
+* the heading text changed
+* the slider structure changed
+* the section is rendered differently on that page
+
+## Intended use
+
+This project is intended as a browser-side UI cleanup helper for personal browsing convenience.
+
+Use it responsibly and only where you are allowed to modify the client-side page experience.
+
+## Disclaimer
+
+This project is not affiliated with, endorsed by, or maintained by UniPegaso or Multiversity.
+
+It is provided as an independent userscript for personal browser customization.
+
+## Contributing
+
+Issues and pull requests are welcome.
+
+Useful contributions include:
+
+* improving selectors
+* supporting additional popup layouts
+* making the section detection more resilient
+* documenting layout changes
+* improving compatibility across pages
