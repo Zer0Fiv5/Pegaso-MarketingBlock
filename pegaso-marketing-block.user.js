@@ -18,14 +18,16 @@
   const HIDDEN_CLASS = "pegaso-hidden-by-userscript";
   const DISABLED_CARD_CLASS = "pegaso-disabled-click-card";
 
-  function normalizeText(text) {
+  // Normalizza testo per confronto
+function normalizeText(text) {
     return String(text || "")
       .replace(/\s+/g, " ")
       .trim()
       .toLowerCase();
   }
-
-  function isVisible(element) {
+  
+  // Verifica visibilità elemento
+function isVisible(element) {
     if (!element) return false;
 
     const style = window.getComputedStyle(element);
@@ -37,7 +39,8 @@
     );
   }
 
-  function addGlobalStyles() {
+  // Aggiunge stili globali
+function addGlobalStyles() {
     if (document.getElementById(STYLE_ID)) return;
 
     const style = document.createElement("style");
@@ -73,12 +76,14 @@
     (document.head || document.documentElement).appendChild(style);
   }
 
-  function hideElement(element) {
+  // Nasconde elemento DOM
+function hideElement(element) {
     if (!element) return;
     element.classList.add(HIDDEN_CLASS);
   }
 
-  function blockClick(element) {
+  // Blocca click su elemento
+function blockClick(element) {
     if (!element || element.dataset.pegasoClickBlocked === "1") return;
 
     element.dataset.pegasoClickBlocked = "1";
@@ -123,7 +128,8 @@
     });
   }
 
-  function closeMarketingPopup() {
+  // Chiude pop‑up marketing
+function closeMarketingPopup() {
     const buttons = document.querySelectorAll('button[data-modal-hide="popup-modal"]');
 
     for (const button of buttons) {
@@ -141,7 +147,8 @@
     }
   }
 
-  function hideCookieBanner() {
+  // Rimuove banner cookie
+function hideCookieBanner() {
     const cookieLink = document.querySelector(
       'a[href="https://www.unipegaso.it/website/politica-dei-cookie"]'
     );
@@ -164,7 +171,8 @@
     }
   }
 
-  function hidePerTeSection() {
+  // Nasconde sezione Per Te
+function hidePerTeSection() {
     const headings = document.querySelectorAll("h1, h2, h3, h4, h5, h6");
 
     for (const heading of headings) {
@@ -200,7 +208,8 @@
     }
   }
 
-  function disableUpsellCourseBanners() {
+  // Disabilita banner upsell
+function disableUpsellCourseBanners() {
     const textElements = document.querySelectorAll("p, h1, h2, h3, h4, h5, h6, span");
 
     for (const element of textElements) {
@@ -226,7 +235,8 @@
     }
   }
 
-  function cleanup() {
+  // Esegue pulizia UI
+function cleanup() {
     addGlobalStyles();
     closeMarketingPopup();
     hideCookieBanner();
