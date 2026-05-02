@@ -1,14 +1,16 @@
 // ==UserScript==
 // @name         Pegaso - Marketing Block
 // @namespace    https://lms.pegaso.multiversity.click/
-// @version      1.1.0
+// @version      1.2.1
 // @description  Hides marketing UI elements, closes known popups, removes the cookie banner, hides the "Per Te" section, and disables upsell course banners on UniPegaso / Multiversity pages.
 // @author       Zer0Fiv5
 // @license      MIT
 // @match        https://*.unipegaso.it/*
 // @match        https://*.multiversity.click/*
-// @run-at       document-idle
 // @grant        none
+// @downloadURL  https://raw.githubusercontent.com/Zer0Fiv5/Pegaso-MarketingBlock/main/pegaso-marketing-block.user.js
+// @updateURL    https://raw.githubusercontent.com/Zer0Fiv5/Pegaso-MarketingBlock/main/pegaso-marketing-block.user.js
+// @run-at       document-idle
 // ==/UserScript==
 
 (() => {

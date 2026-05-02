@@ -33,21 +33,21 @@ Supported managers include:
 * Violentmonkey
 * Greasemonkey
 
-### Steps
+### Install
 
-1. Install a userscript manager extension in your browser.
+Install the script directly from GitHub:
 
-2. Download or open the file:
+[Install Pegaso Marketing Block](https://raw.githubusercontent.com/Zer0Fiv5/Pegaso-MarketingBlock/main/pegaso-marketing-block.user.js)
 
-   ```text
-   pegaso-marketing-block.user.js
-   ```
+Your userscript manager should detect the `.user.js` file automatically and show an installation screen.
 
-3. Import it into your userscript manager.
+After installation, visit a supported UniPegaso or Multiversity page and the script will run automatically.
 
-4. Visit a supported UniPegaso or Multiversity page.
+### Automatic updates
 
-5. The script runs automatically.
+The script supports automatic updates through the `@updateURL` metadata field.
+
+When a new version is published on GitHub, your userscript manager can update the installed script automatically.
 
 ## Features
 
