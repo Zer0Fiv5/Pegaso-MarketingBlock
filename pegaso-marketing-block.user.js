@@ -8,6 +8,8 @@
 // @match        https://*.unipegaso.it/*
 // @match        https://*.multiversity.click/*
 // @grant        none
+// @homepageURL  https://github.com/Zer0Fiv5/Pegaso-MarketingBlock
+// @supportURL   https://github.com/Zer0Fiv5/Pegaso-MarketingBlock/issues
 // @downloadURL  https://raw.githubusercontent.com/Zer0Fiv5/Pegaso-MarketingBlock/main/pegaso-marketing-block.user.js
 // @updateURL    https://raw.githubusercontent.com/Zer0Fiv5/Pegaso-MarketingBlock/main/pegaso-marketing-block.user.js
 // @run-at       document-idle
