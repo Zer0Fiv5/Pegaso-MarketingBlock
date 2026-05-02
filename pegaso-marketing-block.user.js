@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Pegaso - Marketing Block
 // @namespace    https://lms.pegaso.multiversity.click/
-// @version      1.2.1
-// @description  Hides marketing UI elements, closes known popups, removes the cookie banner, hides the "Per Te" section, and disables upsell course banners on UniPegaso / Multiversity pages.
+// @version      1.2.2
+// @description  Hides marketing UI elements, closes known popups, removes the cookie banner, hides the "Per Te" section, and cleans upsell course cards on UniPegaso / Multiversity pages.
 // @author       Zer0Fiv5
 // @license      MIT
 // @match        https://*.unipegaso.it/*
@@ -19,17 +19,19 @@
   const STYLE_ID = "pegaso-clean-ui-style";
   const HIDDEN_CLASS = "pegaso-hidden-by-userscript";
   const DISABLED_CARD_CLASS = "pegaso-disabled-click-card";
+  const CLEAN_UPSELL_CARD_CLASS = "pegaso-clean-upsell-card";
+  const CLEAN_UPSELL_CONTENT_CLASS = "pegaso-clean-upsell-content";
 
   // Normalizza testo per confronto
-function normalizeText(text) {
+  function normalizeText(text) {
     return String(text || "")
       .replace(/\s+/g, " ")
       .trim()
       .toLowerCase();
   }
-  
+
   // Verifica visibilità elemento
-function isVisible(element) {
+  function isVisible(element) {
     if (!element) return false;
 
     const style = window.getComputedStyle(element);
@@ -42,7 +44,7 @@ function isVisible(element) {
   }
 
   // Aggiunge stili globali
-function addGlobalStyles() {
+  function addGlobalStyles() {
     if (document.getElementById(STYLE_ID)) return;
 
     const style = document.createElement("style");
@@ -65,13 +67,21 @@ function addGlobalStyles() {
         pointer-events: auto !important;
       }
 
-      .${DISABLED_CARD_CLASS} .btn-plus-container {
-        pointer-events: none !important;
-        opacity: 0.45 !important;
+      .${CLEAN_UPSELL_CARD_CLASS} {
+        cursor: default !important;
       }
 
-      .${DISABLED_CARD_CLASS} img[src*="plus-square"] {
-        opacity: 0.45 !important;
+      .${CLEAN_UPSELL_CARD_CLASS} * {
+        cursor: default !important;
+      }
+
+      .${CLEAN_UPSELL_CARD_CLASS} .btn-plus-container,
+      .${CLEAN_UPSELL_CARD_CLASS} .${CLEAN_UPSELL_CONTENT_CLASS} {
+        display: none !important;
+      }
+
+      .${CLEAN_UPSELL_CARD_CLASS} img[src*="plus-square"] {
+        display: none !important;
       }
     `;
 
@@ -79,19 +89,20 @@ function addGlobalStyles() {
   }
 
   // Nasconde elemento DOM
-function hideElement(element) {
+  function hideElement(element) {
     if (!element) return;
     element.classList.add(HIDDEN_CLASS);
   }
 
   // Blocca click su elemento
-function blockClick(element) {
+  function blockClick(element) {
     if (!element || element.dataset.pegasoClickBlocked === "1") return;
 
     element.dataset.pegasoClickBlocked = "1";
     element.classList.add(DISABLED_CARD_CLASS);
     element.setAttribute("aria-disabled", "true");
     element.setAttribute("tabindex", "-1");
+    element.classList.remove("cursor-pointer");
 
     const stop = (event) => {
       event.preventDefault();
@@ -130,8 +141,8 @@ function blockClick(element) {
     });
   }
 
-  // Chiude pop‑up marketing
-function closeMarketingPopup() {
+  // Chiude pop-up marketing
+  function closeMarketingPopup() {
     const buttons = document.querySelectorAll('button[data-modal-hide="popup-modal"]');
 
     for (const button of buttons) {
@@ -150,7 +161,7 @@ function closeMarketingPopup() {
   }
 
   // Rimuove banner cookie
-function hideCookieBanner() {
+  function hideCookieBanner() {
     const cookieLink = document.querySelector(
       'a[href="https://www.unipegaso.it/website/politica-dei-cookie"]'
     );
@@ -174,7 +185,7 @@ function hideCookieBanner() {
   }
 
   // Nasconde sezione Per Te
-function hidePerTeSection() {
+  function hidePerTeSection() {
     const headings = document.querySelectorAll("h1, h2, h3, h4, h5, h6");
 
     for (const heading of headings) {
@@ -210,8 +221,70 @@ function hidePerTeSection() {
     }
   }
 
-  // Disabilita banner upsell
-function disableUpsellCourseBanners() {
+  // Disabilita upsell
+  function findUpsellCard(element) {
+    if (!element) return null;
+
+    let current = element;
+
+    for (let depth = 0; depth < 8 && current; depth += 1) {
+      const hasPlusButton = !!current.querySelector(".btn-plus-container");
+      const hasCoursesImage = !!current.querySelector('img[src*="courses-"]');
+      const hasCardShape =
+        current.classList.contains("rounded-lg") &&
+        current.classList.contains("bg-white") &&
+        current.classList.contains("h-56");
+
+      if ((hasPlusButton || hasCoursesImage) && hasCardShape) {
+        return current;
+      }
+
+      current = current.parentElement;
+    }
+
+    return (
+      element.closest(".relative.w-full.rounded-lg") ||
+      element.closest(".rounded-lg.bg-white") ||
+      null
+    );
+  }
+
+  // Pulisce solo il contenuto interno della card upsell, lasciando la card visibile
+  function cleanUpsellCard(card) {
+    if (!card) return;
+
+    card.classList.add(CLEAN_UPSELL_CARD_CLASS);
+    blockClick(card);
+
+    const contentWrapper =
+      card.querySelector(".btn-plus-container")?.closest(".flex.flex-col.justify-center.items-center") ||
+      card.querySelector(".btn-plus-container")?.parentElement ||
+      null;
+
+    if (contentWrapper) {
+      contentWrapper.classList.add(CLEAN_UPSELL_CONTENT_CLASS);
+      hideElement(contentWrapper);
+    }
+
+    card.querySelectorAll("p").forEach((paragraph) => {
+      const text = normalizeText(paragraph.textContent);
+
+      if (
+        text.includes("accresci le tue competenze") ||
+        text.includes("accedendo a più corsi") ||
+        text.includes("accedendo a piu corsi")
+      ) {
+        hideElement(paragraph);
+      }
+    });
+
+    card.querySelectorAll(".btn-plus-container, img[src*='plus-square']").forEach((element) => {
+      hideElement(element);
+    });
+  }
+
+  // Disabilita solo le card upsell
+  function disableUpsellCourseBanners() {
     const textElements = document.querySelectorAll("p, h1, h2, h3, h4, h5, h6, span");
 
     for (const element of textElements) {
@@ -224,21 +297,15 @@ function disableUpsellCourseBanners() {
 
       if (!isUpsellText) continue;
 
-      const card =
-        element.closest(".cursor-pointer") ||
-        element.closest(".relative.rounded-lg") ||
-        element.closest(".relative") ||
-        element.parentElement;
-
+      const card = findUpsellCard(element);
       if (!card) continue;
 
-      //blockClick(card);
-      hideElement(card);
+      cleanUpsellCard(card);
     }
   }
 
   // Esegue pulizia UI
-function cleanup() {
+  function cleanup() {
     addGlobalStyles();
     closeMarketingPopup();
     hideCookieBanner();
