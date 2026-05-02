@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Pegaso - Marketing Block
 // @namespace    https://lms.pegaso.multiversity.click/
-// @version      1.0.0
-// @description  Hides marketing UI elements, closes known popups, removes the cookie banner, and hides the "Per Te" section on UniPegaso / Multiversity pages.
+// @version      1.1.0
+// @description  Hides marketing UI elements, closes known popups, removes the cookie banner, hides the "Per Te" section, and disables upsell course banners on UniPegaso / Multiversity pages.
 // @author       Zer0Fiv5
 // @license      MIT
 // @match        https://*.unipegaso.it/*
@@ -16,6 +16,7 @@
 
   const STYLE_ID = "pegaso-clean-ui-style";
   const HIDDEN_CLASS = "pegaso-hidden-by-userscript";
+  const DISABLED_CARD_CLASS = "pegaso-disabled-click-card";
 
   function normalizeText(text) {
     return String(text || "")
@@ -49,6 +50,24 @@
       .${HIDDEN_CLASS} {
         display: none !important;
       }
+
+      .${DISABLED_CARD_CLASS},
+      .${DISABLED_CARD_CLASS} * {
+        cursor: default !important;
+      }
+
+      .${DISABLED_CARD_CLASS} {
+        pointer-events: auto !important;
+      }
+
+      .${DISABLED_CARD_CLASS} .btn-plus-container {
+        pointer-events: none !important;
+        opacity: 0.45 !important;
+      }
+
+      .${DISABLED_CARD_CLASS} img[src*="plus-square"] {
+        opacity: 0.45 !important;
+      }
     `;
 
     (document.head || document.documentElement).appendChild(style);
@@ -57,6 +76,51 @@
   function hideElement(element) {
     if (!element) return;
     element.classList.add(HIDDEN_CLASS);
+  }
+
+  function blockClick(element) {
+    if (!element || element.dataset.pegasoClickBlocked === "1") return;
+
+    element.dataset.pegasoClickBlocked = "1";
+    element.classList.add(DISABLED_CARD_CLASS);
+    element.setAttribute("aria-disabled", "true");
+    element.setAttribute("tabindex", "-1");
+
+    const stop = (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+      return false;
+    };
+
+    const options = {
+      capture: true,
+      passive: false,
+    };
+
+    element.addEventListener("click", stop, options);
+    element.addEventListener("dblclick", stop, options);
+    element.addEventListener("mousedown", stop, options);
+    element.addEventListener("mouseup", stop, options);
+    element.addEventListener("pointerdown", stop, options);
+    element.addEventListener("pointerup", stop, options);
+    element.addEventListener("touchstart", stop, options);
+    element.addEventListener("touchend", stop, options);
+
+    element.addEventListener(
+      "keydown",
+      (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          stop(event);
+        }
+      },
+      options
+    );
+
+    element.querySelectorAll("a, button, [role='button'], [tabindex]").forEach((child) => {
+      child.setAttribute("aria-disabled", "true");
+      child.setAttribute("tabindex", "-1");
+    });
   }
 
   function closeMarketingPopup() {
@@ -136,11 +200,38 @@
     }
   }
 
+  function disableUpsellCourseBanners() {
+    const textElements = document.querySelectorAll("p, h1, h2, h3, h4, h5, h6, span");
+
+    for (const element of textElements) {
+      const text = normalizeText(element.textContent);
+
+      const isUpsellText =
+        text.includes("accresci le tue competenze") ||
+        text.includes("accedendo a più corsi") ||
+        text.includes("accedendo a piu corsi");
+
+      if (!isUpsellText) continue;
+
+      const card =
+        element.closest(".cursor-pointer") ||
+        element.closest(".relative.rounded-lg") ||
+        element.closest(".relative") ||
+        element.parentElement;
+
+      if (!card) continue;
+
+      //blockClick(card);
+      hideElement(card);
+    }
+  }
+
   function cleanup() {
     addGlobalStyles();
     closeMarketingPopup();
     hideCookieBanner();
     hidePerTeSection();
+    disableUpsellCourseBanners();
   }
 
   cleanup();
