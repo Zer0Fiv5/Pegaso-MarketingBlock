@@ -13,6 +13,8 @@ Main features:
 - Hides the **Per Te** section when it contains the related slider
 - Hides the **Pianificazione esami** promo block
 - Cleans upsell cards in the course tabs
+- Can hide the **COMUNICAZIONE IMPORTANTE** block on `exam-online`
+- Can hide the **Registrazione dell'ambiente** popup on `exam-online`
 - Re-runs cleanup automatically when the page updates dynamically
 - Works on both `*.unipegaso.it` and `*.multiversity.click`
 
@@ -27,6 +29,8 @@ Available toggles:
 - `hidePerTeSection`: hide the **Per Te** recommendation carousel
 - `hideExamPlanningSection`: hide the **Pianificazione esami** promo block
 - `disableUpsellCourseBanners`: clean upsell cards in the course tabs
+- `hideImportantCommunication`: hide the **COMUNICAZIONE IMPORTANTE** block on `exam-online` (`false` by default)
+- `hideEnvironmentRegistrationPopup`: hide the **Registrazione dell'ambiente** popup on `exam-online` (`false` by default)
 
 ## Supported pages
 
@@ -85,6 +89,10 @@ The script hides the promo block titled **Pianificazione esami**, including the 
 
 The script detects upsell cards in the course tabs and cleans their inner content while leaving the card shell visible.
 
+### Exam online banners
+
+The script can also hide the **COMUNICAZIONE IMPORTANTE** block and the **Registrazione dell'ambiente** popup on the `exam-online` page. Both options are available as `false` by default in the `CONFIG` block.
+
 ### Dynamic page cleanup
 
 Because the target sites may update content dynamically, the script uses a `MutationObserver` and re-applies cleanup after DOM changes.
@@ -100,7 +108,9 @@ The script performs these actions:
 5. Hides the nearest matching section containing the slider
 6. Hides the **Pianificazione esami** promo block
 7. Cleans upsell cards found in the course tabs
-8. Observes the page for changes and repeats the cleanup when needed
+8. Hides the exam-online communication block when enabled
+9. Hides the exam-online environment registration popup when enabled
+10. Observes the page for changes and repeats the cleanup when needed
 
 ## Usage
 
@@ -164,6 +174,14 @@ Possible reasons:
 * the upsell text changed
 * the card structure changed
 * the card uses a new layout that is not yet covered by the selectors
+
+### The exam-online popup or communication is still visible
+
+Possible reasons:
+
+* the page structure changed
+* the block uses a different heading or dialog text
+* the corresponding `CONFIG` toggle is still set to `false`
 
 ## Intended use
 

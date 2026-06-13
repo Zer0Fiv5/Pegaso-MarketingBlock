@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Pegaso - Marketing Block
 // @namespace    https://lms.pegaso.multiversity.click/
-// @version      1.3.0
+// @version      1.4.0
 // @description  Hides marketing UI elements, closes known popups, removes the cookie banner, hides the "Per Te" section, and cleans upsell course cards on UniPegaso / Multiversity pages.
 // @author       Zer0Fiv5
 // @license      MIT
@@ -31,6 +31,10 @@
     hideExamPlanningSection: true,
     // Clean upsell cards shown in course tabs.
     disableUpsellCourseBanners: true,
+    // Hide the "COMUNICAZIONE IMPORTANTE" block on exam-online.
+    hideImportantCommunication: false,
+    // Hide the "Registrazione dell'ambiente" popup on exam-online.
+    hideEnvironmentRegistrationPopup: false,
   };
 
   const STYLE_ID = "pegaso-clean-ui-style";
@@ -267,6 +271,60 @@
     }
   }
 
+  // Nasconde il blocco "COMUNICAZIONE IMPORTANTE" nella pagina esami
+  function hideImportantCommunication() {
+    const candidates = document.querySelectorAll("h1, h2, h3, h4, h5, h6, p, div, span, strong");
+
+    for (const candidate of candidates) {
+      if (normalizeText(candidate.textContent) !== "comunicazione importante") continue;
+
+      let target = candidate;
+      let current = candidate;
+
+      for (let depth = 0; depth < 6 && current; depth += 1) {
+        current = current.parentElement;
+        if (!current) break;
+
+        const className = String(current.className || "");
+        const text = normalizeText(current.textContent);
+        const isWalkmeBlock =
+          className.includes("walkme-shoutout-") ||
+          className.includes("walkme-to-remove") ||
+          className.includes("wm-visual-design-full-flex-canvas");
+
+        if (isWalkmeBlock || text.includes("banner di presenza")) {
+          target = current;
+          break;
+        }
+      }
+
+      hideElement(target);
+    }
+  }
+
+  // Nasconde il popup "Registrazione dell'ambiente"
+  function hideEnvironmentRegistrationPopup() {
+    const dialogs = document.querySelectorAll('[role="dialog"], dialog');
+
+    for (const dialog of dialogs) {
+      const text = normalizeText(dialog.textContent);
+
+      if (
+        !text.includes("registrazione dell'ambiente") &&
+        !text.includes("nuova procedura per la prova online")
+      ) {
+        continue;
+      }
+
+      const target =
+        dialog.closest(".fixed.inset-0") ||
+        dialog.closest(".fixed") ||
+        dialog;
+
+      hideElement(target);
+    }
+  }
+
   const UPSELL_TEXT_PATTERNS = [
     "accresci le tue competenze",
     "accedendo a più corsi",
@@ -380,6 +438,8 @@
     if (CONFIG.hidePerTeSection) hidePerTeSection();
     if (CONFIG.hideExamPlanningSection) hideExamPlanningSection();
     if (CONFIG.disableUpsellCourseBanners) disableUpsellCourseBanners();
+    if (CONFIG.hideImportantCommunication) hideImportantCommunication();
+    if (CONFIG.hideEnvironmentRegistrationPopup) hideEnvironmentRegistrationPopup();
   }
 
   cleanup();

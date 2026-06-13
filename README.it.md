@@ -13,6 +13,8 @@ Funzionalità principali:
 - Nasconde la sezione **Per Te** quando contiene lo slider correlato
 - Nasconde il blocco promo **Pianificazione esami**
 - Pulisce le card upsell nelle schede dei corsi
+- Può nascondere il blocco **COMUNICAZIONE IMPORTANTE** in `exam-online`
+- Può nascondere il popup **Registrazione dell'ambiente** in `exam-online`
 - Esegue nuovamente la pulizia quando la pagina viene aggiornata dinamicamente
 - Funziona sia su `*.unipegaso.it` sia su `*.multiversity.click`
 
@@ -27,6 +29,8 @@ Toggle disponibili:
 - `hidePerTeSection`: nasconde il carosello di raccomandazioni **Per Te**
 - `hideExamPlanningSection`: nasconde il blocco promo **Pianificazione esami**
 - `disableUpsellCourseBanners`: pulisce le card upsell nelle schede dei corsi
+- `hideImportantCommunication`: nasconde il blocco **COMUNICAZIONE IMPORTANTE** in `exam-online` (`false` di default)
+- `hideEnvironmentRegistrationPopup`: nasconde il popup **Registrazione dell'ambiente** in `exam-online` (`false` di default)
 
 ## Pagine supportate
 
@@ -85,6 +89,10 @@ Lo script nasconde il blocco promo intitolato **Pianificazione esami**, incluso 
 
 Lo script rileva le card upsell nelle schede dei corsi e ne pulisce il contenuto interno lasciando visibile il contenitore della card.
 
+### Blocchi exam-online
+
+Lo script può anche nascondere il blocco **COMUNICAZIONE IMPORTANTE** e il popup **Registrazione dell'ambiente** nella pagina `exam-online`. Entrambe le opzioni sono disponibili nel blocco `CONFIG` e sono impostate a `false` di default.
+
 ### Pulizia dinamica della pagina
 
 Poiché i siti target possono aggiornare il contenuto dinamicamente, lo script usa un `MutationObserver` e riapplica la pulizia dopo le modifiche al DOM.
@@ -100,7 +108,9 @@ Lo script esegue queste azioni:
 5. Nasconde la sezione più vicina contenente lo slider
 6. Nasconde il blocco promo **Pianificazione esami**
 7. Pulisce le card upsell trovate nelle schede dei corsi
-8. Osserva i cambiamenti della pagina e ripete la pulizia quando necessario
+8. Nasconde il blocco di comunicazione di exam-online quando abilitato
+9. Nasconde il popup di registrazione ambiente di exam-online quando abilitato
+10. Osserva i cambiamenti della pagina e ripete la pulizia quando necessario
 
 ## Utilizzo
 
@@ -164,6 +174,14 @@ Possibili cause:
 * il testo upsell è cambiato
 * la struttura della card è cambiata
 * la card usa un nuovo layout non ancora coperto dai selettori
+
+### Il popup o la comunicazione di exam-online è ancora visibile
+
+Possibili cause:
+
+* la struttura della pagina è cambiata
+* il blocco usa un titolo o un testo diverso
+* il toggle corrispondente nel `CONFIG` è ancora impostato su `false`
 
 ## Uso previsto
 
