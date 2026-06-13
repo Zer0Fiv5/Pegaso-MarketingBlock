@@ -18,6 +18,21 @@
 (() => {
   "use strict";
 
+  // CONFIG
+  // Toggle individual cleanup actions here.
+  const CONFIG = {
+    // Close known marketing popups automatically.
+    closeMarketingPopup: true,
+    // Hide the cookie banner at the bottom of the page.
+    hideCookieBanner: true,
+    // Hide the "Per Te" recommendation carousel.
+    hidePerTeSection: true,
+    // Hide the "Pianificazione esami" promo block.
+    hideExamPlanningSection: true,
+    // Clean upsell cards shown in course tabs.
+    disableUpsellCourseBanners: true,
+  };
+
   const STYLE_ID = "pegaso-clean-ui-style";
   const HIDDEN_CLASS = "pegaso-hidden-by-userscript";
   const DISABLED_CARD_CLASS = "pegaso-disabled-click-card";
@@ -223,21 +238,72 @@
     }
   }
 
+  // Nasconde il blocco Pianificazione esami
+  function hideExamPlanningSection() {
+    const headings = document.querySelectorAll("h1, h2, h3, h4, h5, h6");
+
+    for (const heading of headings) {
+      if (normalizeText(heading.textContent) !== "pianificazione esami") continue;
+
+      let current = heading;
+      let target = null;
+
+      for (let depth = 0; depth < 6 && current; depth += 1) {
+        current = current.parentElement;
+        if (!current) break;
+
+        const normalizedText = normalizeText(current.textContent);
+        const hasPlanningButton = [...current.querySelectorAll("button")].some(
+          (button) => normalizeText(button.textContent) === "crea pianificazione"
+        );
+
+        if (normalizedText.includes("ai-powered") || hasPlanningButton) {
+          target = current;
+          break;
+        }
+      }
+
+      hideElement(target || heading.parentElement || heading);
+    }
+  }
+
+  const UPSELL_TEXT_PATTERNS = [
+    "accresci le tue competenze",
+    "accedendo a più corsi",
+    "accedendo a piu corsi",
+  ];
+
+  function isUpsellText(text) {
+    const normalized = normalizeText(text);
+    return UPSELL_TEXT_PATTERNS.some((pattern) => normalized.includes(pattern));
+  }
+
+  function hasUpsellMarkers(card) {
+    return !!card.querySelector(
+      ".btn-plus-container, img[src*='plus-square'], a[href*='/all-inclusive']"
+    );
+  }
+
+  function isLikelyUpsellCard(card) {
+    if (!card) return false;
+
+    const text = normalizeText(card.textContent);
+    return hasUpsellMarkers(card) || isUpsellText(text);
+  }
+
   // Disabilita upsell
   function findUpsellCard(element) {
     if (!element) return null;
 
     let current = element;
 
-    for (let depth = 0; depth < 8 && current; depth += 1) {
-      const hasPlusButton = !!current.querySelector(".btn-plus-container");
-      const hasCoursesImage = !!current.querySelector('img[src*="courses-"]');
+    for (let depth = 0; depth < 10 && current; depth += 1) {
       const hasCardShape =
-        current.classList.contains("rounded-lg") &&
-        current.classList.contains("bg-white") &&
-        current.classList.contains("h-56");
+        current.classList.contains("rounded-lg") ||
+        current.classList.contains("border") ||
+        current.classList.contains("vueperslide");
 
-      if ((hasPlusButton || hasCoursesImage) && hasCardShape) {
+      if (hasCardShape && isLikelyUpsellCard(current)) {
         return current;
       }
 
@@ -245,8 +311,10 @@
     }
 
     return (
+      element.closest(".vueperslide") ||
       element.closest(".relative.w-full.rounded-lg") ||
       element.closest(".rounded-lg.bg-white") ||
+      element.closest(".border.rounded-lg") ||
       null
     );
   }
@@ -290,18 +358,16 @@
     const textElements = document.querySelectorAll("p, h1, h2, h3, h4, h5, h6, span");
 
     for (const element of textElements) {
-      const text = normalizeText(element.textContent);
-
-      const isUpsellText =
-        text.includes("accresci le tue competenze") ||
-        text.includes("accedendo a più corsi") ||
-        text.includes("accedendo a piu corsi");
-
-      if (!isUpsellText) continue;
+      if (!isUpsellText(element.textContent)) continue;
 
       const card = findUpsellCard(element);
       if (!card) continue;
 
+      cleanUpsellCard(card);
+    }
+
+    for (const card of document.querySelectorAll(".vueperslide, .rounded-lg.bg-white, .border.rounded-lg")) {
+      if (!isLikelyUpsellCard(card)) continue;
       cleanUpsellCard(card);
     }
   }
@@ -309,10 +375,11 @@
   // Esegue pulizia UI
   function cleanup() {
     addGlobalStyles();
-    closeMarketingPopup();
-    hideCookieBanner();
-    hidePerTeSection();
-    disableUpsellCourseBanners();
+    if (CONFIG.closeMarketingPopup) closeMarketingPopup();
+    if (CONFIG.hideCookieBanner) hideCookieBanner();
+    if (CONFIG.hidePerTeSection) hidePerTeSection();
+    if (CONFIG.hideExamPlanningSection) hideExamPlanningSection();
+    if (CONFIG.disableUpsellCourseBanners) disableUpsellCourseBanners();
   }
 
   cleanup();

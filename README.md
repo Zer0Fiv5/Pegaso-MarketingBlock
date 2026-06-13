@@ -11,8 +11,22 @@ Main features:
 - Closes known marketing popups
 - Hides the cookie banner
 - Hides the **Per Te** section when it contains the related slider
+- Hides the **Pianificazione esami** promo block
+- Cleans upsell cards in the course tabs
 - Re-runs cleanup automatically when the page updates dynamically
 - Works on both `*.unipegaso.it` and `*.multiversity.click`
+
+## Configuration
+
+At the top of [`pegaso-marketing-block.user.js`](./pegaso-marketing-block.user.js) you will find a `CONFIG` block with `true` / `false` switches for each cleanup action.
+
+Available toggles:
+
+- `closeMarketingPopup`: close known marketing popups
+- `hideCookieBanner`: hide the cookie banner
+- `hidePerTeSection`: hide the **Per Te** recommendation carousel
+- `hideExamPlanningSection`: hide the **Pianificazione esami** promo block
+- `disableUpsellCourseBanners`: clean upsell cards in the course tabs
 
 ## Supported pages
 
@@ -21,7 +35,7 @@ The script runs on:
 ```text
 https://*.unipegaso.it/*
 https://*.multiversity.click/*
-````
+```
 
 ## Installation
 
@@ -63,6 +77,14 @@ The script looks for the known cookie policy link and hides the related banner c
 
 The script searches for headings named **Per Te** and hides the related content block when it detects the expected slider structure.
 
+### "Pianificazione esami" block hiding
+
+The script hides the promo block titled **Pianificazione esami**, including the related planning call-to-action.
+
+### Upsell card cleanup
+
+The script detects upsell cards in the course tabs and cleans their inner content while leaving the card shell visible.
+
 ### Dynamic page cleanup
 
 Because the target sites may update content dynamically, the script uses a `MutationObserver` and re-applies cleanup after DOM changes.
@@ -76,7 +98,9 @@ The script performs these actions:
 3. Hides the cookie banner when detected
 4. Searches for the **Per Te** heading
 5. Hides the nearest matching section containing the slider
-6. Observes the page for changes and repeats the cleanup when needed
+6. Hides the **Pianificazione esami** promo block
+7. Cleans upsell cards found in the course tabs
+8. Observes the page for changes and repeats the cleanup when needed
 
 ## Usage
 
@@ -132,6 +156,14 @@ Possible reasons:
 * the heading text changed
 * the slider structure changed
 * the section is rendered differently on that page
+
+### The upsell card is still visible
+
+Possible reasons:
+
+* the upsell text changed
+* the card structure changed
+* the card uses a new layout that is not yet covered by the selectors
 
 ## Intended use
 

@@ -11,8 +11,22 @@ Funzionalità principali:
 - Chiude popup marketing noti
 - Nasconde il banner cookie
 - Nasconde la sezione **Per Te** quando contiene lo slider correlato
+- Nasconde il blocco promo **Pianificazione esami**
+- Pulisce le card upsell nelle schede dei corsi
 - Esegue nuovamente la pulizia quando la pagina viene aggiornata dinamicamente
 - Funziona sia su `*.unipegaso.it` sia su `*.multiversity.click`
+
+## Configurazione
+
+All’inizio di [`pegaso-marketing-block.user.js`](./pegaso-marketing-block.user.js) trovi un blocco `CONFIG` con interruttori `true` / `false` per ogni azione di pulizia.
+
+Toggle disponibili:
+
+- `closeMarketingPopup`: chiude i popup marketing noti
+- `hideCookieBanner`: nasconde il banner cookie
+- `hidePerTeSection`: nasconde il carosello di raccomandazioni **Per Te**
+- `hideExamPlanningSection`: nasconde il blocco promo **Pianificazione esami**
+- `disableUpsellCourseBanners`: pulisce le card upsell nelle schede dei corsi
 
 ## Pagine supportate
 
@@ -21,7 +35,7 @@ Lo script viene eseguito su:
 ```text
 https://*.unipegaso.it/*
 https://*.multiversity.click/*
-````
+```
 
 ## Installazione
 
@@ -63,6 +77,14 @@ Lo script cerca il link noto alla politica dei cookie e nasconde il contenitore 
 
 Lo script cerca intestazioni chiamate **Per Te** e nasconde il blocco di contenuto correlato quando rileva la struttura prevista dello slider.
 
+### Nascondimento blocco "Pianificazione esami"
+
+Lo script nasconde il blocco promo intitolato **Pianificazione esami**, incluso il relativo pulsante di invito all’azione.
+
+### Pulizia card upsell
+
+Lo script rileva le card upsell nelle schede dei corsi e ne pulisce il contenuto interno lasciando visibile il contenitore della card.
+
 ### Pulizia dinamica della pagina
 
 Poiché i siti target possono aggiornare il contenuto dinamicamente, lo script usa un `MutationObserver` e riapplica la pulizia dopo le modifiche al DOM.
@@ -76,7 +98,9 @@ Lo script esegue queste azioni:
 3. Nasconde il banner cookie quando viene rilevato
 4. Cerca l’intestazione **Per Te**
 5. Nasconde la sezione più vicina contenente lo slider
-6. Osserva i cambiamenti della pagina e ripete la pulizia quando necessario
+6. Nasconde il blocco promo **Pianificazione esami**
+7. Pulisce le card upsell trovate nelle schede dei corsi
+8. Osserva i cambiamenti della pagina e ripete la pulizia quando necessario
 
 ## Utilizzo
 
@@ -132,6 +156,14 @@ Possibili cause:
 * il testo dell’intestazione è cambiato
 * la struttura dello slider è cambiata
 * la sezione viene renderizzata in modo diverso su quella pagina
+
+### La card upsell è ancora visibile
+
+Possibili cause:
+
+* il testo upsell è cambiato
+* la struttura della card è cambiata
+* la card usa un nuovo layout non ancora coperto dai selettori
 
 ## Uso previsto
 
