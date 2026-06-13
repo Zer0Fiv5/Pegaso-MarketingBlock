@@ -15,6 +15,7 @@ Main features:
 - Cleans upsell cards in the course tabs
 - Can hide the **COMUNICAZIONE IMPORTANTE** block on `exam-online`
 - Can hide the **Registrazione dell'ambiente** popup on `exam-online`
+- Adds an **Appelli** sidebar entry with visible text next to the icon
 - Re-runs cleanup automatically when the page updates dynamically
 - Works on both `*.unipegaso.it` and `*.multiversity.click`
 
@@ -93,6 +94,10 @@ The script detects upsell cards in the course tabs and cleans their inner conten
 
 The script can also hide the **COMUNICAZIONE IMPORTANTE** block and the **Registrazione dell'ambiente** popup on the `exam-online` page. Both options are available as `false` by default in the `CONFIG` block.
 
+### Left sidebar shortcut
+
+The script adds an **Appelli** sidebar entry to the left sidebar, pointing to `/appelli`, with visible text next to the icon.
+
 ### Dynamic page cleanup
 
 Because the target sites may update content dynamically, the script uses a `MutationObserver` and re-applies cleanup after DOM changes.
@@ -110,7 +115,8 @@ The script performs these actions:
 7. Cleans upsell cards found in the course tabs
 8. Hides the exam-online communication block when enabled
 9. Hides the exam-online environment registration popup when enabled
-10. Observes the page for changes and repeats the cleanup when needed
+10. Adds the **Appelli** sidebar entry with visible text to the left sidebar
+11. Observes the page for changes and repeats the cleanup when needed
 
 ## Usage
 

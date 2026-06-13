@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Pegaso - Marketing Block
 // @namespace    https://lms.pegaso.multiversity.click/
-// @version      1.4.0
+// @version      1.5.2
 // @description  Hides marketing UI elements, closes known popups, removes the cookie banner, hides the "Per Te" section, and cleans upsell course cards on UniPegaso / Multiversity pages.
 // @author       Zer0Fiv5
 // @license      MIT
@@ -36,6 +36,10 @@
     // Hide the "Registrazione dell'ambiente" popup on exam-online.
     hideEnvironmentRegistrationPopup: false,
   };
+
+  const APPELLI_ICON_URL = "https://lms.pegaso.multiversity.click/assets/calendar-filled-f49c23bb.svg";
+  const APPELLI_LINK_CLASS = "pegaso-appelli-sidebar-link";
+  const APPELLI_LABEL_CLASS = "pegaso-appelli-sidebar-label";
 
   const STYLE_ID = "pegaso-clean-ui-style";
   const HIDDEN_CLASS = "pegaso-hidden-by-userscript";
@@ -103,6 +107,28 @@
 
       .${CLEAN_UPSELL_CARD_CLASS} img[src*="plus-square"] {
         display: none !important;
+      }
+
+      .${APPELLI_LINK_CLASS} {
+        display: flex !important;
+        align-items: center !important;
+        gap: 0.75rem !important;
+        min-height: 1.75rem !important;
+        height: auto !important;
+        line-height: 1.2 !important;
+      }
+
+      .${APPELLI_LINK_CLASS} img {
+        flex: 0 0 auto;
+      }
+
+      .${APPELLI_LABEL_CLASS} {
+        display: inline-block !important;
+        font-size: 0.95rem;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        line-height: 1.2;
+        white-space: nowrap;
       }
     `;
 
@@ -325,6 +351,52 @@
     }
   }
 
+  // Aggiunge il collegamento "Appelli" nel menu laterale sinistro
+  function addAppelliSidebarLink() {
+    const sidebar = document.getElementById("scrollableDiv");
+    if (
+      !sidebar ||
+      sidebar.querySelector('a[href="/appelli"]') ||
+      sidebar.querySelector('[data-pegaso-appelli-link="1"]')
+    ) {
+      return;
+    }
+
+    const referenceLink =
+      sidebar.querySelector('a[href="/exam-online"]') ||
+      sidebar.querySelector('a[href="/video-conference"]') ||
+      sidebar.querySelector("a");
+
+    if (!referenceLink) return;
+
+    const link = document.createElement("a");
+    link.href = "/appelli";
+    link.className = `flex items-center nav-item px-9 mb-6 hover:text-platform-primary ${APPELLI_LINK_CLASS}`;
+    link.dataset.pegasoAppelliLink = "1";
+    link.title = "Appelli";
+    link.setAttribute("aria-label", "Appelli");
+
+    const icon = document.createElement("img");
+    icon.className = "h-5";
+    icon.src = APPELLI_ICON_URL;
+    icon.alt = "";
+    icon.setAttribute("aria-hidden", "true");
+
+    const label = document.createElement("span");
+    label.className = APPELLI_LABEL_CLASS;
+    label.textContent = "Appelli";
+
+    link.appendChild(icon);
+    link.appendChild(label);
+
+    if (window.location.pathname === "/appelli") {
+      link.classList.add("nav-item-filled");
+      link.setAttribute("aria-current", "page");
+    }
+
+    referenceLink.insertAdjacentElement("afterend", link);
+  }
+
   const UPSELL_TEXT_PATTERNS = [
     "accresci le tue competenze",
     "accedendo a più corsi",
@@ -440,6 +512,7 @@
     if (CONFIG.disableUpsellCourseBanners) disableUpsellCourseBanners();
     if (CONFIG.hideImportantCommunication) hideImportantCommunication();
     if (CONFIG.hideEnvironmentRegistrationPopup) hideEnvironmentRegistrationPopup();
+    addAppelliSidebarLink();
   }
 
   cleanup();

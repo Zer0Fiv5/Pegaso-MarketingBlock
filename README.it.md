@@ -15,6 +15,7 @@ Funzionalità principali:
 - Pulisce le card upsell nelle schede dei corsi
 - Può nascondere il blocco **COMUNICAZIONE IMPORTANTE** in `exam-online`
 - Può nascondere il popup **Registrazione dell'ambiente** in `exam-online`
+- Aggiunge la voce **Appelli** nella sidebar sinistra con testo visibile accanto all'icona
 - Esegue nuovamente la pulizia quando la pagina viene aggiornata dinamicamente
 - Funziona sia su `*.unipegaso.it` sia su `*.multiversity.click`
 
@@ -93,6 +94,10 @@ Lo script rileva le card upsell nelle schede dei corsi e ne pulisce il contenuto
 
 Lo script può anche nascondere il blocco **COMUNICAZIONE IMPORTANTE** e il popup **Registrazione dell'ambiente** nella pagina `exam-online`. Entrambe le opzioni sono disponibili nel blocco `CONFIG` e sono impostate a `false` di default.
 
+### Collegamento nella sidebar
+
+Lo script aggiunge una voce **Appelli** nella sidebar sinistra, puntando a `/appelli`, con testo visibile accanto all'icona.
+
 ### Pulizia dinamica della pagina
 
 Poiché i siti target possono aggiornare il contenuto dinamicamente, lo script usa un `MutationObserver` e riapplica la pulizia dopo le modifiche al DOM.
@@ -110,7 +115,8 @@ Lo script esegue queste azioni:
 7. Pulisce le card upsell trovate nelle schede dei corsi
 8. Nasconde il blocco di comunicazione di exam-online quando abilitato
 9. Nasconde il popup di registrazione ambiente di exam-online quando abilitato
-10. Osserva i cambiamenti della pagina e ripete la pulizia quando necessario
+10. Aggiunge la voce **Appelli** con testo visibile nella sidebar sinistra
+11. Osserva i cambiamenti della pagina e ripete la pulizia quando necessario
 
 ## Utilizzo
 
